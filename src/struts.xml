@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<constant name="struts.enable.DynamicMethodInvocation" value="false"></constant>
+	<constant name="struts.devMode" value="true"></constant>    
+    
+   <!-- 加载国际化资源文件配置 -->
+   <constant name="struts.custom.i18n.resources" value="messages"></constant>
+    <package name="ssh_store" extends="json-default">
+       <!-- 拦截器 注册 -->
+       
+         <interceptors>
+       <!-- 注册自己的拦截器-->
+          <interceptor name="mylogin" class="loginInterceptor"></interceptor>
+          <!-- 定义自己的拦截器栈 -->
+          <interceptor-stack name="mystack">
+          <!-- 配置哪些action的业务方法不需要执行拦截器的业务方法 -->
+             <interceptor-ref name="mylogin">
+               <!-- 排除login方法   执行login方法不需要执行拦截器业务方法 多个方法以逗号分隔 -->
+               <param name="excludeMethods">login</param>
+             </interceptor-ref>
+             <interceptor-ref name="defaultStack"></interceptor-ref>
+          </interceptor-stack>
+         </interceptors>
+        <!-- 启用自己拦截器栈 -->
+        <default-interceptor-ref name="mystack"></default-interceptor-ref> 
+       <!-- ********************************** -->
+        
+        <!-- 定义全局结果集 在用户未登录的结果集跳转 -->
+        <global-results>
+        	<result name="no_login" type="redirect">/login.jsp</result>
+        </global-results>
+    </package>
+
+
+</struts>

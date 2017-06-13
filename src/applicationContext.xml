@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/cache 
+	http://www.springframework.org/schema/cache/spring-cache.xsd
+	http://www.springframework.org/schema/data/jpa
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	http://cxf.apache.org/jaxrs
+	http://cxf.apache.org/schemas/jaxrs.xsd"> 
+	<!-- 加载外部properties文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	<!-- 开启注解扫描 -->
+	<context:component-scan base-package="com.rcm.ssh.storemanager"/>
+<!-- c3p0 -->
+	 <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+	    <property name="jdbcUrl" value="${jdbc.url}"></property>
+	    <property name="user" value="${jdbc.username}"></property>
+	    <property name="password" value="${jdbc.password}"></property>
+	    <property name="driverClass" value="${jdbc.drvierClass}"></property>
+	</bean> 
+	
+	<!-- 创建sessionFactory -->
+	<!-- org.springframework.orm.hibernate3.LocalSessionFactoryBean  创建xml版本 SessionFactory对象 -->
+	<!-- org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean   创建注解版本 SessionFactory 对象-->
+		<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	       <!-- 1: 注入 dataSource -->
+	          <property name="dataSource" ref="dataSource"></property>
+	          <!-- 参数信息配置 -->
+	      <property name="hibernateProperties">
+	         <!-- 配置 hibernate .cfg.xml参数信息 -->
+	            <props>
+	               <prop key="hibernate.show_sql">true</prop>
+	               <prop key="hibernate.format_sql">true</prop>
+	               <prop key="hibernate.hbm2ddl.auto">update</prop>
+	               <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+	            </props>
+	      </property>
+	      <!-- 3加载实体模型 所在包名 -->
+	   	<property name="packagesToScan">
+	   		<list>
+	   			<value>com.rcm.ssh.storemanager.domain</value>
+	   		</list>
+	   	</property>
+	 </bean>
+	<!-- 业务层添加事物管理 -->
+	<!-- 1  配置事务管理器  依赖具体持久层框架    2: 事物管理器 交给 通知   3: 配置切面  -->
+     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+     </bean>
+     <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
+
+
+
+
