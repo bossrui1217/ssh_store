@@ -14,37 +14,37 @@ import com.opensymphony.xwork2.ModelDriven;
 import com.rcm.ssh.storemanager.domain.Userinfo;
 import com.rcm.ssh.storemanager.service.user.UserService;
 
-@Controller("userAction")//spring´´½¨action¶ÔÏó
-@Scope("prototype") //action¶àÀı
-@Namespace("/") //Ãû³Æ¿Õ¼ä
-@ParentPackage("ssh_store") //µ±Ç°action¼Ì³ĞÄÄ¸ö°ü
+@Controller("userAction")//springåˆ›å»ºactionå¯¹è±¡å“ˆå“ˆ
+@Scope("prototype") //actionå¤šä¾‹
+@Namespace("/") //åç§°ç©ºé—´
+@ParentPackage("ssh_store") //å½“å‰actionç»§æ‰¿å“ªä¸ªåŒ…
 public class UserAction  extends ActionSupport implements ModelDriven<Userinfo>{
 	private Userinfo model=new Userinfo();
-	
+
 	@Override
 	public Userinfo getModel() {
 		return model;
 	}
-	
-	// ×¢ÈëÒµÎñ²ã¶ÔÏó
-		@Autowired
-		private UserService userService;
 
-		// value ÇëÇóĞéÄâÂ·¾¶ @Result ÅäÖÃ½á¹û¼¯ name ½á¹û¼¯ÊÓÍ¼Ãû³Æ location ½á¹û¼¯Ìø×ªÂ·¾¶ type ½á¹û¼¯ÀàĞÍ ×ª·¢
-		// ÖØ¶¨Ïò
-		@Action(value = "userAction_login", results = { @Result(name = "login_error", location = "/login.jsp"),
-				@Result(name = "login_ok", type = "redirect", location = "/jsps/main.jsp") })
-		public String login() {
-			Userinfo existUser = userService.findUserByNameAndPassword(model.getName(), model.getPassword());
-			if (existUser == null) {
-				// Êı¾İ¿âÃ»ÓĞ²éÑ¯µ½ µÇÂ¼Ê§°Ü
-				this.addActionError(this.getText("login.nameOrpassword.error"));
-				return "login_error";
-			} else {
-				// ÓÃ»§´æÔÚ
-				ServletActionContext.getRequest().getSession().setAttribute("existUser", existUser);
-				return "login_ok";
-			}
+	// æ³¨å…¥ä¸šåŠ¡å±‚å¯¹è±¡
+	@Autowired
+	private UserService userService;
+
+	// value è¯·æ±‚è™šæ‹Ÿè·¯å¾„ @Result é…ç½®ç»“æœé›† name ç»“æœé›†è§†å›¾åç§° location ç»“æœé›†è·³è½¬è·¯å¾„ type ç»“æœé›†ç±»å‹ è½¬å‘
+	// é‡å®šå‘
+	@Action(value = "userAction_login", results = { @Result(name = "login_error", location = "/login.jsp"),
+			@Result(name = "login_ok", type = "redirect", location = "/jsps/main.jsp") })
+	public String login() {
+		Userinfo existUser = userService.findUserByNameAndPassword(model.getName(), model.getPassword());
+		if (existUser == null) {
+			// æ•°æ®åº“æ²¡æœ‰æŸ¥è¯¢åˆ° ç™»å½•å¤±è´¥
+			this.addActionError(this.getText("login.nameOrpassword.error"));
+			return "login_error";
+		} else {
+			// ç”¨æˆ·å­˜åœ¨
+			ServletActionContext.getRequest().getSession().setAttribute("existUser", existUser);
+			return "login_ok";
 		}
+	}
 
 }
